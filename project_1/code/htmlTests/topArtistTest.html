@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API topartist Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>top artist API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All top artists</h3>
+        <button onclick="allTopArtists()">GET /topartists</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single top artist</h3>
+        <input type="number" id="topartistId" placeholder="Enter ID">
+        <button onclick="getTopArtist()">GET /topartists/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New topartist</h3>
+        <input type="text" id="nameNew" placeholder="Enter topartist name">
+        <input type="text" id="genreNew" placeholder="Enter genre">
+        <input type="number" id="rankNew" placeholder="Enter rank">
+        <button onclick="createTopArtist()">POST /topartists</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update topartist</h3>
+        <input type="number" id="topartistIdUpdate" placeholder="Enter ID">
+        <input type="text" id="nameUpdate" placeholder="Enter new topartistname">
+        <input type="text" id="genreUpdate" placeholder="Enter new genre">
+        <input type="number" id="rankUpdate" placeholder="Enter new rank">
+        <button onclick="updateTopArtist()">PUT /topartists/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete topartist</h3>
+        <input type="number" id="topartistIdDelete" placeholder="Enter ID">
+        <button onclick="deleteTopArtist()">DELETE /topartists/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All topartists
+        async function allTopArtists() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/topartists`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting topartists: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single topartist
+        async function getTopArtist() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('topartistId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/topartists/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting topartist: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New topartist
+        async function createTopArtist() {
+
+            const output = document.getElementById('create-result');
+
+            const newtopartist = {
+                name: document.getElementById('nameNew').value,
+                genre: document.getElementById('genreNew').value,
+                rank: parseInt(document.getElementById('rankNew').value)
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/topartists`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newtopartist)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating topartist: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update topartist
+        async function updateTopArtist() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('topartistIdUpdate').value;
+
+            const updatedtopartist = {
+                name: document.getElementById('nameUpdate').value,
+                genre: document.getElementById('genreUpdate').value,
+                rank: parseInt(document.getElementById('rankUpdate').value)
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/topartists/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedtopartist)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating topartist: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete topartist
+        async function deleteTopArtist() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('topartistIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/topartists/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting topartist: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

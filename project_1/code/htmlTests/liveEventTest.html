@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API event Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All events</h3>
+        <button onclick="allEvents()">GET /events</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single event</h3>
+        <input type="number" id="eventId" placeholder="Enter ID">
+        <button onclick="getEvent()">GET /events/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New event</h3>
+        <input type="text" id="venueNew" placeholder="Enter venue">
+        <input type="text" id="artistNew" placeholder="Enter artist">
+        <input type="text" id="dayNew" placeholder="Enter day">
+        <button onclick="createEvent()">POST /events</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update event</h3>
+        <input type="number" id="eventIdUpdate" placeholder="Enter ID">
+        <input type="text" id="venueUpdate" placeholder="Enter new venue">
+        <input type="text" id="artistUpdate" placeholder="Enter new artist">
+        <input type="text" id="dayUpdate" placeholder="Enter new day">
+        <button onclick="updateEvent()">PUT /events/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete event</h3>
+        <input type="number" id="eventIdDelete" placeholder="Enter ID">
+        <button onclick="deleteEvent()">DELETE /events/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All events
+        async function allEvents() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/events`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting events: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single event
+        async function getEvent() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('eventId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/events/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting event: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New event
+        async function createEvent() {
+
+            const output = document.getElementById('create-result');
+
+            const newEvent = {
+                venue: document.getElementById('venueNew').value,
+                artist: document.getElementById('artistNew').value,
+                day: document.getElementById('dayNew').value
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/events`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newEvent)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating event: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update event
+        async function updateEvent() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('eventIdUpdate').value;
+
+            const updatedEvent = {
+                venue: document.getElementById('venueUpdate').value,
+                artist: document.getElementById('artistUpdate').value,
+                day: document.getElementById('dayUpdate').value
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/events/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedEvent)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating event: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete event
+        async function deleteEvent() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('eventIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/events/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting event: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

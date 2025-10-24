@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API artist Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Artist API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All artists</h3>
+        <button onclick="allArtists()">GET /artists</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single artist</h3>
+        <input type="number" id="artistId" placeholder="Enter ID">
+        <button onclick="getArtist()">GET /artists/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New artist</h3>
+        <input type="text" id="nameNew" placeholder="Enter artist name">
+        <input type="text" id="agencyNew" placeholder="Enter agency">
+        <input type="text" id="genreNew" placeholder="Enter genre">
+        <button onclick="createArtist()">POST /artists</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update artist</h3>
+        <input type="number" id="artistIdUpdate" placeholder="Enter ID">
+        <input type="text" id="artistNameUpdate" placeholder="Enter new artist name">
+        <input type="text" id="agencyUpdate" placeholder="Enter new agency">
+        <input type="text" id="genreUpdate" placeholder="Enter new genre">
+        <button onclick="updateArtist()">PUT /artists/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete artist</h3>
+        <input type="number" id="artistIdDelete" placeholder="Enter ID">
+        <button onclick="deleteArtist()">DELETE /artists/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All artists
+        async function allArtists() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/artists`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting artists: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single artist
+        async function getArtist() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('artistId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/artists/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting artist: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New artist
+        async function createArtist() {
+
+            const output = document.getElementById('create-result');
+
+            const newArtist = {
+                name: document.getElementById('nameNew').value,
+                agency: document.getElementById('agencyNew').value,
+                genre: document.getElementById('genreNew').value
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/artists`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newArtist)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating artist: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update artist
+        async function updateArtist() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('artistIdUpdate').value;
+
+            const updatedArtist = {
+                name: document.getElementById('artistNameUpdate').value,
+                agency: document.getElementById('agencyUpdate').value,
+                genre: document.getElementById('genreUpdate').value
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/artists/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedArtist)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating artist: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete artist
+        async function deleteArtist() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('artistIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/artists/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting artist: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

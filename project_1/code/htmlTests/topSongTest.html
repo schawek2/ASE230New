@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API topsong Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>top song API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All top songs</h3>
+        <button onclick="allTopSongs()">GET /topsongs</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single top song</h3>
+        <input type="number" id="topsongId" placeholder="Enter ID">
+        <button onclick="getTopSong()">GET /topsongs/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New topsong</h3>
+        <input type="text" id="nameNew" placeholder="Enter topsong name">
+        <input type="text" id="artistNew" placeholder="Enter artist">
+        <input type="number" id="rankNew" placeholder="Enter rank">
+        <button onclick="createTopSong()">POST /topsongs</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update topsong</h3>
+        <input type="number" id="topsongIdUpdate" placeholder="Enter ID">
+        <input type="text" id="nameUpdate" placeholder="Enter new topsongname">
+        <input type="text" id="artistUpdate" placeholder="Enter new artist">
+        <input type="number" id="rankUpdate" placeholder="Enter new rank">
+        <button onclick="updateTopSong()">PUT /topsongs/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete topsong</h3>
+        <input type="number" id="topsongIdDelete" placeholder="Enter ID">
+        <button onclick="deleteTopSong()">DELETE /topsongs/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All topsongs
+        async function allTopSongs() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/topsongs`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting topsongs: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single topsong
+        async function getTopSong() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('topsongId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/topsongs/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting topsong: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New topsong
+        async function createTopSong() {
+
+            const output = document.getElementById('create-result');
+
+            const newTopSong = {
+                name: document.getElementById('nameNew').value,
+                artist: document.getElementById('artistNew').value,
+                rank: parseInt(document.getElementById('rankNew').value)
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/topsongs`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newTopSong)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating topsong: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update topsong
+        async function updateTopSong() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('topsongIdUpdate').value;
+
+            const updatedtopsong = {
+                name: document.getElementById('nameUpdate').value,
+                artist: document.getElementById('artistUpdate').value,
+                rank: parseInt(document.getElementById('rankUpdate').value)
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/topsongs/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedtopsong)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating topsong: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete topsong
+        async function deleteTopSong() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('topsongIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/topsongs/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting topsong: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

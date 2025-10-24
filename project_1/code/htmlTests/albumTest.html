@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API album Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Album API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All Albums</h3>
+        <button onclick="allAlbums()">GET /albums</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single Album</h3>
+        <input type="number" id="albumId" placeholder="Enter ID">
+        <button onclick="getAlbum()">GET /albums/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New album</h3>
+        <input type="text" id="albumNameNew" placeholder="Enter albumname">
+        <input type="text" id="artistNameNew" placeholder="Enter artist name">
+        <input type="text" id="numOfSongsNew" placeholder="Enter number of songs">
+        <button onclick="createAlbum()">POST /albums</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update album</h3>
+        <input type="number" id="albumIdUpdate" placeholder="Enter ID">
+        <input type="text" id="albumNameUpdate" placeholder="Enter new albumname">
+        <input type="text" id="artistNameUpdate" placeholder="Enter new artist Name">
+        <input type="text" id="numOfSongsUpdate" placeholder="Enter new number of Songs">
+        <button onclick="updateAlbum()">PUT /albums/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete album</h3>
+        <input type="number" id="albumIdDelete" placeholder="Enter ID">
+        <button onclick="deleteAlbum()">DELETE /albums/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All albums
+        async function allAlbums() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/albums`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting albums: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single album
+        async function getAlbum() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('albumId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/albums/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting album: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New album
+        async function createAlbum() {
+
+            const output = document.getElementById('create-result');
+
+            const newAlbum = {
+                name: document.getElementById('albumNameNew').value,
+                artistName: document.getElementById('artistNameNew').value,
+                numOfSongs: document.getElementById('numOfSongsNew').value
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/albums`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newAlbum)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating album: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update album
+        async function updateAlbum() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('albumIdUpdate').value;
+
+            const updatedalbum = {
+                name: document.getElementById('albumNameUpdate').value,
+                artistName: document.getElementById('artistNameUpdate').value,
+                numOfSongs: document.getElementById('numOfSongsUpdate').value
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/albums/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedalbum)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating album: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete album
+        async function deleteAlbum() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('albumIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/albums/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting album: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

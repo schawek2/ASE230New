@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API audiobook Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Audiobook API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All audiobooks</h3>
+        <button onclick="allAudiobooks()">GET /audiobooks</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single audiobook</h3>
+        <input type="number" id="audiobookId" placeholder="Enter ID">
+        <button onclick="getAudiobook()">GET /audiobooks/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New audiobook</h3>
+        <input type="text" id="bookNameNew" placeholder="Enter audiobook name">
+        <input type="text" id="writerNameNew" placeholder="Enter writerName">
+        <input type="text" id="readerNameNew" placeholder="Enter readerName">
+        <button onclick="createAudiobook()">POST /audiobooks</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update audiobook</h3>
+        <input type="number" id="audiobookIdUpdate" placeholder="Enter ID">
+        <input type="text" id="bookNameUpdate" placeholder="Enter new audiobook name">
+        <input type="text" id="writerNameUpdate" placeholder="Enter new writer Name">
+        <input type="text" id="readerNameUpdate" placeholder="Enter new reader Name">
+        <button onclick="updateAudiobook()">PUT /audiobooks/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete audiobook</h3>
+        <input type="number" id="audiobookIdDelete" placeholder="Enter ID">
+        <button onclick="deleteAudiobook()">DELETE /audiobooks/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All audiobooks
+        async function allAudiobooks() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/audiobooks`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting audiobooks: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single audiobook
+        async function getAudiobook() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('audiobookId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/audiobooks/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting audiobook: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New audiobook
+        async function createAudiobook() {
+
+            const output = document.getElementById('create-result');
+
+            const newaudiobook = {
+                name: document.getElementById('bookNameNew').value,
+                writerName: document.getElementById('writerNameNew').value,
+                readerName: document.getElementById('readerNameNew').value
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/audiobooks`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newaudiobook)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating audiobook: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update audiobook
+        async function updateAudiobook() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('audiobookIdUpdate').value;
+
+            const updatedaudiobook = {
+                name: document.getElementById('bookNameUpdate').value,
+                writerName: document.getElementById('writerNameUpdate').value,
+                readerName: document.getElementById('readerNameUpdate').value
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/audiobooks/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedaudiobook)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating audiobook: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete audiobook
+        async function deleteAudiobook() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('audiobookIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/audiobooks/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting audiobook: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

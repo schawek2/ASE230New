@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API playlist Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Playlist API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All playlists</h3>
+        <button onclick="allPlaylists()">GET /playlists</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single playlist</h3>
+        <input type="number" id="playlistId" placeholder="Enter ID">
+        <button onclick="getPlaylist()">GET /playlists/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New playlist</h3>
+        <input type="text" id="userNameNew" placeholder="Enter user name">
+        <input type="text" id="playlistNameNew" placeholder="Enter playlist Name">
+        <input type="text" id="genreNew" placeholder="Enter genre">
+        <button onclick="createPlaylist()">POST /playlists</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update playlist</h3>
+        <input type="number" id="playlistIdUpdate" placeholder="Enter ID">
+        <input type="text" id="userNameUpdate" placeholder="Enter new user name">
+        <input type="text" id="playlistNameUpdate" placeholder="Enter new playlistName">
+        <input type="text" id="genreUpdate" placeholder="Enter new genre">
+        <button onclick="updatePlaylist()">PUT /playlists/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete playlist</h3>
+        <input type="number" id="playlistIdDelete" placeholder="Enter ID">
+        <button onclick="deletePlaylist()">DELETE /playlists/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All playlists
+        async function allPlaylists() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/playlists`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting playlists: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single playlist
+        async function getPlaylist() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('playlistId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/playlists/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting playlist: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New playlist
+        async function createPlaylist() {
+
+            const output = document.getElementById('create-result');
+
+            const newplaylist = {
+                userName: document.getElementById('userNameNew').value,
+                playlistName: document.getElementById('playlistNameNew').value,
+                genre: document.getElementById('genreNew').value
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/playlists`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newplaylist)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating playlist: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update playlist
+        async function updatePlaylist() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('playlistIdUpdate').value;
+
+            const updatedplaylist = {
+                userName: document.getElementById('userNameUpdate').value,
+                playlistName: document.getElementById('playlistNameUpdate').value,
+                genre: document.getElementById('genreUpdate').value
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/playlists/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedplaylist)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating playlist: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete playlist
+        async function deletePlaylist() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('playlistIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/playlists/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting playlist: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

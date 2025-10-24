@@ -1,0 +1,198 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API employee Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All employees</h3>
+        <button onclick="allEmployees()">GET /employees</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single employee</h3>
+        <input type="number" id="employeeId" placeholder="Enter ID">
+        <button onclick="getEmployee()">GET /employees/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New employee</h3>
+        <input type="text" id="employeeNameNew" placeholder="Enter employeename">
+        <input type="text" id="emailNew" placeholder="Enter email">
+        <input type="text" id="departmentNew" placeholder="Enter department">
+        <input type="text" id="passwordNew" placeholder="Enter password">
+        <button onclick="createEmployee()">POST /employees</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update employee</h3>
+        <input type="number" id="employeeIdUpdate" placeholder="Enter ID">
+        <input type="text" id="employeeNameUpdate" placeholder="Enter new employeename">
+        <input type="text" id="emailUpdate" placeholder="Enter new email">
+        <input type="text" id="departmentUpdate" placeholder="Enter department">
+        <input type="text" id="passwordUpdate" placeholder="Enter new password">
+        <button onclick="updateEmployee()">PUT /employees/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete employee</h3>
+        <input type="number" id="employeeIdDelete" placeholder="Enter ID">
+        <button onclick="deleteEmployee()">DELETE /employees/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All employees
+        async function allEmployees() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/employees`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting employees: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single employee
+        async function getEmployee() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('employeeId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/employees/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting employee: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New employee
+        async function createEmployee() {
+
+            const output = document.getElementById('create-result');
+
+            const newemployee = {
+                name: document.getElementById('employeeNameNew').value,
+                email: document.getElementById('emailNew').value,
+                department: document.getElementById('departmentNew').value,
+                password: document.getElementById('passwordNew').value
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/employees`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newemployee)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating employee: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update employee
+        async function updateEmployee() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('employeeIdUpdate').value;
+
+            const updatedemployee = {
+                name: document.getElementById('employeeNameUpdate').value,
+                email: document.getElementById('emailUpdate').value,
+                department: document.getElementById('departmentUpdate').value,
+                password: document.getElementById('passwordUpdate').value
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedemployee)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating employee: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete employee
+        async function deleteEmployee() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('employeeIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting employee: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

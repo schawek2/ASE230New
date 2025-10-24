@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API User Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>User API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All Users</h3>
+        <button onclick="allUsers()">GET /users</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single user</h3>
+        <input type="number" id="userId" placeholder="Enter ID">
+        <button onclick="getUser()">GET /users/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New user</h3>
+        <input type="text" id="userNameNew" placeholder="Enter username">
+        <input type="text" id="emailNew" placeholder="Enter email">
+        <input type="text" id="passwordNew" placeholder="Enter password">
+        <button onclick="createUser()">POST /users</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update user</h3>
+        <input type="number" id="userIdUpdate" placeholder="Enter ID">
+        <input type="text" id="userNameUpdate" placeholder="Enter new username">
+        <input type="text" id="emailUpdate" placeholder="Enter new email">
+        <input type="text" id="passwordUpdate" placeholder="Enter new password">
+        <button onclick="updateUser()">PUT /users/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete user</h3>
+        <input type="number" id="userIdDelete" placeholder="Enter ID">
+        <button onclick="deleteUser()">DELETE /users/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All Users
+        async function allUsers() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/users`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting Users: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single user
+        async function getUser() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('userId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/users/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting User: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New user
+        async function createUser() {
+
+            const output = document.getElementById('create-result');
+
+            const newUser = {
+                name: document.getElementById('userNameNew').value,
+                email: document.getElementById('emailNew').value,
+                password: document.getElementById('passwordNew').value
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/users`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newUser)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating User: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update user
+        async function updateUser() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('userIdUpdate').value;
+
+            const updatedUser = {
+                name: document.getElementById('userNameUpdate').value,
+                email: document.getElementById('emailUpdate').value,
+                password: document.getElementById('passwordUpdate').value
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedUser)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating User: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete user
+        async function deleteUser() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('userIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting User: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>

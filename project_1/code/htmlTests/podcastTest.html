@@ -1,0 +1,194 @@
+<!--code/6_RESTAPI/api_tests/javascript/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API podcast Testing </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Podcast API Test</h1>
+
+
+    <div class="test-section">
+        <h3>Get All podcasts</h3>
+        <button onclick="allPodcasts()">GET /podcasts</button>
+        <pre id="get-all-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Get Single podcast</h3>
+        <input type="number" id="podcastId" placeholder="Enter ID">
+        <button onclick="getPodcast()">GET /podcasts/{id}</button>
+        <pre id="get-single-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Create New podcast</h3>
+        <input type="text" id="nameNew" placeholder="Enter podcast name">
+        <input type="text" id="hostNameNew" placeholder="Enter host Name">
+        <input type="number" id="totalTimeNew" placeholder="Enter total Time">
+        <button onclick="createPodcast()">POST /podcasts</button>
+        <pre id="create-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Update podcast</h3>
+        <input type="number" id="podcastIdUpdate" placeholder="Enter ID">
+        <input type="text" id="nameUpdate" placeholder="Enter new podcast name">
+        <input type="text" id="hostNameUpdate" placeholder="Enter new host Name">
+        <input type="text" id="totalTimeUpdate" placeholder="Enter new total Time">
+        <button onclick="updatePodcast()">PUT /podcasts/{id}</button>
+        <pre id="update-result"></pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Delete podcast</h3>
+        <input type="number" id="podcastIdDelete" placeholder="Enter ID">
+        <button onclick="deletePodcast()">DELETE /podcasts/{id}</button>
+        <pre id="delete-result"></pre>
+    </div>
+
+    <script>
+        // Global variable for API base URL
+        let API_BASE_URL = 'http://localhost:8080';
+
+        // Test 2.1: Get All podcasts
+        async function allPodcasts() {
+
+            const output = document.getElementById('get-all-result');
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/podcasts`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting podcasts: " + error.message;
+            }
+        }
+
+        // Test 2.2: Get Single podcast
+        async function getPodcast() {
+            
+            const output = document.getElementById('get-single-result');
+            const id = document.getElementById('podcastId').value;
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/podcasts/${id}`);
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error){
+                output.textContent = "Error when getting podcast: " + error.message;
+            }
+        }
+
+        // Test 2.3: Create New podcast
+        async function createPodcast() {
+
+            const output = document.getElementById('create-result');
+
+            const newpodcast = {
+                name: document.getElementById('nameNew').value,
+                hostName: document.getElementById('hostNameNew').value,
+                totalTime: parseInt(document.getElementById('totalTimeNew').value)
+            };
+
+            try{
+                const response = await fetch(`${API_BASE_URL}/podcasts`, {
+
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(newpodcast)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when creating podcast: " + error.message;
+            }
+            
+        }
+
+        // Test 2.4: Update podcast
+        async function updatePodcast() {
+            const output = document.getElementById('update-result');
+            const id = document.getElementById('podcastIdUpdate').value;
+
+            const updatedpodcast = {
+                name: document.getElementById('NameUpdate').value,
+                hostName: document.getElementById('hostNameUpdate').value,
+                totalTime: parseInt(document.getElementById('totalTimeUpdate').value)
+            };
+            
+            try{
+                const response = await fetch(`${API_BASE_URL}/podcasts/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedpodcast)
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+                output.textContent = "Error when updating podcast: " + error.message;
+            }
+        }
+
+        // Test 2.5: Delete podcast
+        async function deletePodcast() {
+            const output = document.getElementById('delete-result');
+            const id = document.getElementById('podcastIdDelete').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/podcasts/${id}`, {
+                    method: "DELETE"    
+                });
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 1);
+            } catch (error) {
+            output.textContent = "Error when deleting podcast: " + error.message;
+            }
+            
+        }
+    </script>
+</body>
+</html>
