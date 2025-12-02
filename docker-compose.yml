@@ -1,0 +1,58 @@
+# Based off module3/code/1_Docker/4.Containerizing laravel with docker/docker-compose.yml
+
+services:
+  # --------------------------------------------------------
+  # 1. NGINX (Web Server)
+  # --------------------------------------------------------
+  nginx:
+    build: ./docker/nginx
+    container_name: music-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./music-api:/var/www/html
+    depends_on:
+      - php
+    networks:
+      - music-network
+
+  # --------------------------------------------------------
+  # 2. PHP-FPM (Runs Laravel)
+  # --------------------------------------------------------
+  php:
+    build: ./docker/php
+    container_name: music-php
+    volumes:
+      - ./music-api:/var/www/html
+    networks:
+      - music-network
+
+  # --------------------------------------------------------
+  # 3. MySQL (Database)
+  # --------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: music-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "Rustycat"
+      MYSQL_DATABASE: "music_db"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - music-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  music-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+
